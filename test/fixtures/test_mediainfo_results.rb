@@ -1,4 +1,24 @@
 class TestMediainfoResults
+  def self.temp
+    "Complete name                    : tmp/videos/triple_figures.mov
+    Format                           : MPEG-4
+    Format profile                   : QuickTime
+    Codec ID                         : qt  
+    File size                        : 10.1 MiB
+    Duration                         : 40s 240ms
+    Overall bit rate                 : 2 104 Kbps
+    Performer                        : Flight Of The Conchords
+    Genre                            : TV Shows
+    Encoded date                     : UTC 2007-12-04 22:14:21
+    Tagged date                      : UTC 2007-12-04 22:14:22
+    Writing application              : VisualHub 1.23
+    Writing library                  : Apple QuickTime 7.3.0
+    com.apple.quicktime.player.movie : (Binary)
+    tvsh                             : Flight Of The Conchords
+    tvsn                             : 1
+    tves                             : 1"
+  end
+  
   def self.triple_figures
     "General
     Complete name                    : tmp/videos/triple_figures.mov
