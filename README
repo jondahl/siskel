@@ -1,0 +1,171 @@
+= Siskel
+
+A video/audio file inspector, powered by MediaInfo (http://mediainfo.sourceforge.net/).
+
+Siskel grew out of the RVideo project, and may replace the RVideo::Inspector library within RVideo. Head to http://groups.google.com/group/rvideo for more info.
+
+== Install Siskel
+
+  gem install siskel
+  
+== Install MediaInfo
+
+MediaInfo comes in a few versions, including a CLI (command-line interface) and a GUI version. You want the CLI.
+
+Download for most platforms at http://mediainfo.sourceforge.net/en/Download.
+
+Or build from source: http://mediainfo.sourceforge.net/en/Download/Source.
+
+== Basic usage
+
+  results = Siskel.review(:file => 'path/to/myfile.mp4')
+  
+  results[:format]              # "MPEG-4"
+  results[:duration]            # "208ms"
+  results[:audio][:format]      # "AAC"
+  results[:video][:width]       # "640 pixels"
+  
+== Details
+
+Siskel just parses the results of MediaInfo and returns a hash of the results. 
+
+MediaInfo itself returns results like this (abbreviated):
+
+  General
+  Complete name                    : tmp/videos/triple_figures.mov
+  Format                           : MPEG-4
+
+  Video
+  Format                           : MPEG-4 Visual
+  Width                            : 624 pixels
+  Height                           : 352 pixels
+  Bits/(Pixel*Frame)               : 0.299
+
+  Audio
+  Format                           : AAC
+  Bit rate                         : 128 Kbps
+  Sampling rate                    : 48.0 KHz
+  Channel(s)                       : 2 channels
+
+"General" options appear at top level.
+  
+  results[:complete_name]               # "tmp/videos/triple_figures.mov"
+  results[:format]                      # "MPEG-4"
+  
+"Video" and "Audio" options are nested.
+
+  results[:video][:format]              # "MPEG-4 Visual" 
+  results[:video][:width]               # "624 pixels"    
+  results[:video][:height]              # "352 pixels"    
+  results[:video][:bits_pixel_frame]    # "0.299"            
+                                                        
+  results[:audio][:format]              # "AAC"           
+  results[:audio][:bit_rate]            # "128 Kbps"      
+  results[:audio][:sampling_rate]       # "48.0 KHz"      
+  results[:audio][:channels]            # "2 channels"    
+  
+Keys are downcased, cleaned up, and turned into symbols. Parentheses are ignored, and spaces and punctuation become underscores. So "Complete Name" becomes :complete_name, "Format Settings, BVOP" becomes :format_settings_bvop, and "Bits/(Pixel*Frame)" becomes :bits_pixel_frame.
+  
+== Sample MediaInfo output
+
+  General
+  Complete name                    : tmp/videos/triple_figures.mov
+  Format                           : MPEG-4
+  Format profile                   : QuickTime
+  Codec ID                         : qt  
+  File size                        : 10.1 MiB
+  Duration                         : 40s 240ms
+  Overall bit rate                 : 2 104 Kbps
+  Performer                        : Flight Of The Conchords
+  Genre                            : TV Shows
+  Encoded date                     : UTC 2007-12-04 22:14:21
+  Tagged date                      : UTC 2007-12-04 22:14:22
+  Writing application              : VisualHub 1.23
+  Writing library                  : Apple QuickTime 7.3.0
+  com.apple.quicktime.player.movie : (Binary)
+  tvsh                             : Flight Of The Conchords
+  tvsn                             : 1
+  tves                             : 1
+
+  Video
+  ID                               : 1
+  Format                           : MPEG-4 Visual
+  Format profile                   : Simple@L1
+  Format settings, BVOP            : No
+  Format settings, QPel            : No
+  Format settings, GMC             : No warppoints
+  Format settings, Matrix          : Default (H.263)
+  Codec ID                         : 20
+  Duration                         : 40s 240ms
+  Bit rate mode                    : Variable
+  Bit rate                         : 1 971 Kbps
+  Width                            : 624 pixels
+  Height                           : 352 pixels
+  Display aspect ratio             : 16/9
+  Frame rate mode                  : Constant
+  Frame rate                       : 29.970 fps
+  Resolution                       : 24 bits
+  Colorimetry                      : 4:2:0
+  Scan type                        : Progressive
+  Bits/(Pixel*Frame)               : 0.299
+  Stream size                      : 9.45 MiB (94%)
+  Writing library                  : Lavc51.38.0
+  Encoded date                     : UTC 1970-01-01 00:00:00
+  Tagged date                      : UTC 2007-12-04 22:14:22
+
+  Audio
+  ID                               : 2
+  Format                           : AAC
+  Format/Info                      : Advanced Audio Codec
+  Format version                   : Version 4
+  Format profile                   : LC
+  Format settings, SBR             : No
+  Codec ID                         : 40
+  Duration                         : 40s 234ms
+  Bit rate mode                    : Variable
+  Bit rate                         : 128 Kbps
+  Channel(s)                       : 2 channels
+  Channel positions                : L R
+  Sampling rate                    : 48.0 KHz
+  Resolution                       : 16 bits
+  Stream size                      : 629 KiB (6%)
+  Encoded date                     : UTC 1970-01-01 00:00:00
+  Tagged date                      : UTC 2007-12-04 22:14:22
+
+== Why MediaInfo?
+
+RVideo used ffmpeg for file inspection, via "ffmpeg -i /path/to/file.mp4". This is sort of a hack; the -i flag is not "inspect", but "input file". So this command just calls ffmpeg with a file but doesn't tell ffmpeg what to do, and ffmpeg returns a bunch of data as a result. 
+
+But the biggest problem with using ffmpeg for file inspection is that the data returned by "ffmpeg -i" changes every few months. So the library is highly coupled to a particular version of SVN checkout of ffmpeg, which sucks.
+
+MediaInfo has only one purpose: to return this sort of data. Its text output doesn't change nearly as frequently as ffmpeg's, and if it does, it will be far easier to keep Siskel up to date with these changes. (MediaInfo has very little syntax: just headers and key/value pairs separated by colons. ffmpeg's output is verbose and unstructured.)
+
+A few other reasons for using MediaInfo for file inspection: it's reportedly faster than ffmpeg, and it's far smaller and simpler to install.
+
+The downside is that if you're already using ffmpeg, you need to install yet another video/audio tool. But MediaInfo is simple and small enough that this isn't a big deal.
+
+== Help out!
+
+For questions, bug reports, or improvements, head over to the RVideo Google Group: http://groups.google.com/group/rvideo.
+
+== LICENSE
+
+(The MIT License)
+
+Copyright © 2009 Jonathan Dahl
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ‘Software’), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED ‘AS IS’, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+== Shameless Plugs
+
+Check out Zencoder (http://zencoder.com), a scalable video transcoding product.
+
+* Blog: http://railspikes.com
+* GitHub: jondahl (http://github.com/jondahl)
+* Twitter: @jondahl (http://twitter.com/jondahl)
+* Other Startup: http://tumblon.com
+* Consulting: http://phronos.com
